@@ -8,10 +8,11 @@ include <NopSCADlib/lib.scad>   // Includes all the vitamins and utilities in No
 //! Assembly instructions in Markdown format in front of each module that makes an assembly.
 module main_assembly()
 assembly("main") {
-    // Outer box with feet
-    translate([0,0,0]) {
-        small_box();
-    }
+    mech_box();
+}
+
+module mech_box() {
+    small_box();
     
     box_height=90;
     feet_height=3.0;
@@ -22,11 +23,91 @@ assembly("main") {
     lift=feet_height+box_thickness+margin;
     // Inner box
     translate([0,0,lift]) {
-        color("green") {
+        color("blue") {
             small_box(box_height-lift-inner_depth,66,96,70,100,box_thickness,2,false,feet_height);
         }
     }
+}
 
+module big_floor() { 
+    translate([0,0,0.1]) {
+        color("gray") {
+            test_floor(-40.5,-55.5,13,7);
+        }
+    }    
+}
+
+module test_all_boxes() {
+        for(x=[0:1]) {
+        for(y=[0:1]) {
+            translate([80*x,110*y,0]) {
+                // Outer single box with feet
+                small_box();
+            }
+        }
+    }
+
+    translate([140,0,0]) {    
+        for(x=[0:1]) {
+            for(y=[0:0]) {
+                translate([40*x,110*y,0]) {
+                    // Half box (tall)
+                    half_box_tall();
+                }
+            }
+        }
+    }
+    
+    translate([220,-27.5,0]) {    
+        for(x=[0:1]) {
+            for(y=[0:1]) {
+                translate([40*x,55*y,0]) {
+                    // Quarter box
+                    quarter_box();
+                }
+            }
+        }
+    }
+    
+    translate([0,220-27.5,0]) {
+        for(x=[0:0]) {
+            for(y=[0:1]) {
+                translate([80*x,55*y,0]) {
+                    // Half box (Wide)
+                    half_box_wide();
+                }
+            }
+        }
+    }   
+}
+
+module quarter_box() {
+    small_box(90,38,53,40,55,1.5,2);
+}
+
+module half_box_wide() {
+    small_box(90,76,53,80,55,1.5,2);
+}
+
+module half_box_tall() {
+    small_box(90,38,106,40,110,1.5,2);
+}
+
+module test_floor(start_x, start_y, column_count, row_count) {   
+    divot_diameter = 19.5;
+    divot_radius = divot_diameter/2;
+    x_spacing = 20.5;
+    y_spacing = 35.5;
+    
+    translate([start_x,start_y,0]){
+        for(x = [0:column_count-1]) {
+            for(y = [0:row_count-1]) {
+                translate([(x_spacing+divot_diameter)*x,(y_spacing+divot_diameter)*y,0]) {
+                    cylinder(h=0.1,r=divot_radius,center=false);
+                }
+            }
+        }
+    }
 }
 
 module rack_and_pinion() {
