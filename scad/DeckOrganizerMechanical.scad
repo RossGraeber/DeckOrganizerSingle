@@ -8,23 +8,32 @@ include <NopSCADlib/lib.scad>   // Includes all the vitamins and utilities in No
 //! Assembly instructions in Markdown format in front of each module that makes an assembly.
 module main_assembly()
 assembly("main") {
-    mech_box();
+    translate([100,0,0]) {
+        mech_box();
+    }
 }
 
 module mech_box() {
     small_box();
-    
     box_height=90;
     feet_height=3.0;
     box_thickness=1.5;
     margin=0.1;
+    
     // clearance for lid holder shapes
-    inner_depth=4;
-    lift=feet_height+box_thickness+margin;
+    inner_depth=3.1;
+    
+    total_top_height=0;
+    rack_and_pinion();
+    translate() {
+        deck_box_lid();
+    }
+    
     // Inner box
+    lift=feet_height+box_thickness+margin;
     translate([0,0,lift]) {
         color("blue") {
-            small_box(box_height-lift-inner_depth,66,96,70,100,box_thickness,2,false,feet_height);
+            small_box(box_height-lift-inner_depth,66,96,66,96,box_thickness,2,false,feet_height);
         }
     }
 }
@@ -111,9 +120,14 @@ module test_floor(start_x, start_y, column_count, row_count) {
 }
 
 module rack_and_pinion() {
-    translate([43,30,83]) {
+    translate([35.5,51,83]) {
         rotate([0,-90,0]) {
-            color("blue") {
+            color("gray") {
+                translate([0,0,-10]) {
+                    cylinder(90,2,2);
+                }
+            }
+            color("purple") {
                 scale([1.0,1.0,3.0]) {
                     involute_gear_profile(m=2, z=15*2, w=5, pa = 20, clearance = undef);
                 }
@@ -121,11 +135,31 @@ module rack_and_pinion() {
         }
     }
     
-    translate([43,0,4.5]) {
+    translate([34.5,21,4.5]) {
         rotate([0,-90,0]) {
             color("red") {
+                scale([1.0,1.0,4.0]) {
+                    involute_rack_profile(m=2, z=13.2, w=5, pa = 20, clearance = undef);
+                }
+            }
+        }
+    }
+    
+    translate([-35.5,51,83]) {
+        rotate([0,-90,0]) {
+            color("purple") {
                 scale([1.0,1.0,3.0]) {
-                    involute_rack_profile(m=2, z=14, w=5, pa = 20, clearance = undef);
+                    involute_gear_profile(m=2, z=15*2, w=5, pa = 20, clearance = undef);
+                }
+            }
+        }
+    }
+    
+    translate([-34.5,21,4.5]) {
+        rotate([0,-90,0]) {
+            color("red") {
+                scale([1.0,1.0,4.0]) {
+                    involute_rack_profile(m=2, z=13.2, w=5, pa = 20, clearance = undef);
                 }
             }
         }
